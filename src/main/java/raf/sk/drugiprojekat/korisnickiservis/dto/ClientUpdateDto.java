@@ -10,21 +10,17 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter @Setter
-public class ManagerCreateDto {
+public class ClientUpdateDto {
     @Email
     private String email;
-    @Length(min = 4, max = 13)
-    private String username;
-    @Length(min = 7, max = 15)
-    private String password;
-    @NotNull
-    private LocalDate birthDate;
     @NotBlank
     private String name;
     @NotBlank
     private String surname;
-    @NotBlank
-    private String gymName;
     @NotNull
-    private LocalDate employmentDate;
+    private LocalDate birthDate;
+    @Length(min = 4, max = 13)
+    private String username;
+    @Length(min = 7, max = 15)
+    private String password;
 }

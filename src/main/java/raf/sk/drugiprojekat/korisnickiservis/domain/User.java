@@ -11,14 +11,15 @@ import java.time.LocalDate;
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name = "UserType")
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String username;
     private String password;
-    @Email
+    @Email @Column(unique = true)
     private String email;
     private LocalDate birthDate;
     private String name;

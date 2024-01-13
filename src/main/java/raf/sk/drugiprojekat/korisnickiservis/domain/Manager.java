@@ -14,7 +14,6 @@ public class Manager extends User{
 
     private String gymName;
     private LocalDate employmentDate;
-
     @Column(columnDefinition = "default false")
     private Boolean forbidden;
 
