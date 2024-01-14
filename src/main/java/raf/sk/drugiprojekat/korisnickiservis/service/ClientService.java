@@ -6,6 +6,7 @@ import raf.sk.drugiprojekat.korisnickiservis.dto.*;
 
 public interface ClientService {
     Page<ClientDto> findAll(Pageable pageable);
+    ClientDto findById(Long id);
     ClientDto update(Long id, ClientUpdateDto clientUpdateDto);
     ClientDto add(ClientCreateDto clientCreateDto);
     TokenResponseDto login(TokenRequestDto tokenRequestDto);

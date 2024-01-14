@@ -2,6 +2,7 @@ package raf.sk.drugiprojekat.korisnickiservis.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import raf.sk.drugiprojekat.korisnickiservis.controller.AdminController;
 import raf.sk.drugiprojekat.korisnickiservis.controller.ClientController;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -20,7 +21,7 @@ public class SwaggerConfiguration {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
-                .select().apis(RequestHandlerSelectors.basePackage(ClientController.class.getPackage().getName()))
+                .select().apis(RequestHandlerSelectors.basePackage(AdminController.class.getPackage().getName()))
                 .build()
                 .apiInfo(metaData());
     }

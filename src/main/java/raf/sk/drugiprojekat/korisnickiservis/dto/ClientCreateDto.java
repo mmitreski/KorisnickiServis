@@ -3,6 +3,7 @@ package raf.sk.drugiprojekat.korisnickiservis.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -23,6 +24,6 @@ public class ClientCreateDto {
     private String username;
     @Length(min = 7, max = 15)
     private String password;
-    @NotBlank
+    @Range(min = 1)
     private Long cardId;
 }

@@ -16,9 +16,7 @@ import java.time.LocalDate;
 @Getter @Setter @NoArgsConstructor
 public class Client extends User{
     private Long cardId;
-    @Column(columnDefinition = "default 0")
     private Long trainingsReserved;
-    @Column(columnDefinition = "default false")
     private Boolean forbidden;
 
     public Client(String username, String password, String email, LocalDate birthDate, String name, String surname, Long cardId, Long trainingsReserved, Boolean forbidden) {

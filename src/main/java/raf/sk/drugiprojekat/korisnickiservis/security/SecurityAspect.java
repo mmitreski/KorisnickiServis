@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import raf.sk.drugiprojekat.korisnickiservis.security.service.TokenService;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 @Aspect
 @Configuration
@@ -29,11 +30,14 @@ public class SecurityAspect {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
 
+        int id = -1; // id from the method
         String token = null;
         for(int i = 0; i < methodSignature.getParameterNames().length; i++) {
             if(methodSignature.getParameterNames()[i].equals("authorization")) {
                 if(joinPoint.getArgs()[i].toString().startsWith("Bearer"))
                     token = joinPoint.getArgs()[i].toString().split(" ")[1];
+            } else if(methodSignature.getParameterNames()[i].equals("id")) {
+                id = Integer.parseInt(joinPoint.getArgs()[i].toString());
             }
         }
 
@@ -45,9 +49,26 @@ public class SecurityAspect {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         CheckSecurity checkSecurity = method.getAnnotation(CheckSecurity.class);
-        String valid = claims.get("valid", String.class);
-        if(checkSecurity.valid().equals(valid)) {
-            return joinPoint.proceed();
+        String role = claims.get("role", String.class);
+
+        int claims_id = switch (role) {
+            case "ROLE_ADMIN" -> claims.get("admin_id", Integer.class);
+            case "ROLE_MANAGER" -> claims.get("manager_id", Integer.class);
+            case "ROLE_CLIENT" -> claims.get("client_id", Integer.class);
+            default -> -1;
+        }; // id from the token
+
+        if(Arrays.asList(checkSecurity.roles()).contains(role)) {
+            if(role.equals("ROLE_ADMIN")) {
+                if(!checkSecurity.admin_id_required() || id == claims_id) // if the id is required and the id's match or if the id is not required then proceed
+                    return joinPoint.proceed();
+            } else if(role.equals("ROLE_MANAGER")) {
+                if(!checkSecurity.manager_id_required() || id == claims_id)
+                    return joinPoint.proceed();
+            } else {
+                if(!checkSecurity.client_id_required() || id == claims_id)
+                    return joinPoint.proceed();
+            }
         }
 
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -7,9 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
-
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name = "UserType")
 @Getter @Setter @NoArgsConstructor
 public abstract class User {

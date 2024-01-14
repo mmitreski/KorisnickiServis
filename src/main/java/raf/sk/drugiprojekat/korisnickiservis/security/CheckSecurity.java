@@ -8,5 +8,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckSecurity {
-    String valid() default "FALSE";
+    String[] roles() default {};
+    boolean client_id_required() default false;
+    boolean admin_id_required() default false;
+    boolean manager_id_required() default false;
 }
