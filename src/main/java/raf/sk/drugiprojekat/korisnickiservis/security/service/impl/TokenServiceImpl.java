@@ -9,7 +9,7 @@ import raf.sk.drugiprojekat.korisnickiservis.security.service.TokenService;
 @Service
 public class TokenServiceImpl implements TokenService {
 
-    @Value("${oauth.jwt.secret")
+    @Value("${oauth.jwt.secret}")
     private String jwtSecret;
 
     @Override
