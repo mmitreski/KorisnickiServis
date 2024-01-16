@@ -10,4 +10,6 @@ public interface ClientService {
     ClientDto update(Long id, ClientUpdateDto clientUpdateDto);
     ClientDto add(ClientCreateDto clientCreateDto);
     TokenResponseDto login(TokenRequestDto tokenRequestDto);
+    void forbiddenById(Long id, Boolean forbidden);
+    void deleteById(Long id);
 }

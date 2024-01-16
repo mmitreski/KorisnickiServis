@@ -44,14 +44,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDto update(Long id, AdminUpdateDto adminUpdateDto) {
-        Admin admin = adminRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("ADMIN: [id: %d] NOT FOUND.", id)));
-        admin.setUsername(adminUpdateDto.getUsername());
-        admin.setPassword(adminUpdateDto.getPassword());
-        admin.setName(adminUpdateDto.getName());
-        admin.setSurname(adminUpdateDto.getSurname());
-        admin.setBirthDate(admin.getBirthDate());
-        admin.setEmail(admin.getEmail());
-        return adminMapper.adminToAdminDto(adminRepository.save(admin));
+        return adminMapper.adminToAdminDto(adminRepository.save(adminMapper.adminUpdateDtoToAdmin(id, adminUpdateDto)));
     }
 
     @Override
@@ -61,5 +54,10 @@ public class AdminServiceImpl implements AdminService {
         claims.put("role", "ROLE_ADMIN");
         claims.put("admin_id", admin.getId());
         return new TokenResponseDto(tokenService.generate(claims));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        adminRepository.deleteById(id);
     }
 }

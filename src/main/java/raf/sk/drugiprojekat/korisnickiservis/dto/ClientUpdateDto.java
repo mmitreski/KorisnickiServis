@@ -13,11 +13,8 @@ import java.time.LocalDate;
 public class ClientUpdateDto {
     @Email
     private String email;
-    @NotBlank
     private String name;
-    @NotBlank
     private String surname;
-    @NotNull
     private LocalDate birthDate;
     @Length(min = 4, max = 13)
     private String username;

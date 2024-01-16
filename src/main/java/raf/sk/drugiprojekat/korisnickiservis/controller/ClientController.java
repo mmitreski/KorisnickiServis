@@ -29,23 +29,31 @@ public class ClientController {
                             "Default sort order is ascending. " +
                             "Multiple sort criteria are supported.")})
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"})
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<ClientDto>> getAllClients(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         return new ResponseEntity<>(clientService.findAll(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get client by id")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"})
-    @GetMapping("/{id}")
-    public ResponseEntity<ClientDto> getClientById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
+    @GetMapping(params = {"id"})
+    public ResponseEntity<ClientDto> getClientById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
         return new ResponseEntity<>(clientService.findById(id), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update client")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CLIENT"}, client_id_required = true)
-    @PutMapping("/{id}")
-    public ResponseEntity<ClientDto> updateClientById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id, @RequestBody @Valid ClientUpdateDto clientUpdateDto) {
+    @PutMapping(params = {"id"})
+    public ResponseEntity<ClientDto> updateClientById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id, @RequestBody(required = false) @Valid ClientUpdateDto clientUpdateDto) {
         return new ResponseEntity<>(clientService.update(id, clientUpdateDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Enable/Disable client")
+    @CheckSecurity(roles = {"ROLE_ADMIN"})
+    @PutMapping(params = {"id", "forbidden"})
+    public ResponseEntity<?> forbiddenById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id, @RequestParam("forbidden") Boolean forbidden) {
+        clientService.forbiddenById(id, forbidden);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "Register client")
@@ -60,4 +68,11 @@ public class ClientController {
         return new ResponseEntity<>(clientService.login(tokenRequestDto), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Delete client")
+    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CLIENT"}, client_id_required = true)
+    @DeleteMapping(params = {"id"})
+    public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
+        clientService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

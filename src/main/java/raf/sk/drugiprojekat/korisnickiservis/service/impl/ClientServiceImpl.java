@@ -41,15 +41,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientDto update(Long id, ClientUpdateDto clientUpdateDto) {
-        // You can add a method clientUpdateDtoToClient in the ClientMapper class and have this batch of code only in one place (as in add method)
-        Client client = clientRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("CLIENT: [id: %d] NOT FOUND.", id)));
-        client.setUsername(clientUpdateDto.getUsername());
-        client.setPassword(clientUpdateDto.getPassword());
-        client.setEmail(clientUpdateDto.getEmail());
-        client.setBirthDate(clientUpdateDto.getBirthDate());
-        client.setName(clientUpdateDto.getName());
-        client.setSurname(clientUpdateDto.getSurname());
-        return clientMapper.clientToClientDto(clientRepository.save(client));
+        return clientMapper.clientToClientDto(clientRepository.save(clientMapper.clientUpdateDtoToClient(id, clientUpdateDto)));
     }
 
     @Override
@@ -65,5 +57,15 @@ public class ClientServiceImpl implements ClientService {
         claims.put("role", "ROLE_CLIENT");
         claims.put("client_id", client.getId());
         return new TokenResponseDto(tokenService.generate(claims));
+    }
+
+    @Override
+    public void forbiddenById(Long id, Boolean forbidden) {
+        clientRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("CLIENT: [id: %d] NOT FOUND.", id))).setForbidden(forbidden);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        clientRepository.deleteById(id);
     }
 }

@@ -10,4 +10,5 @@ public interface ManagerService {
     ManagerDto update(Long id, ManagerUpdateDto managerUpdateDto);
     ManagerDto add(ManagerCreateDto managerCreateDto);
     TokenResponseDto login(TokenRequestDto tokenRequestDto);
+    void deleteById(Long id);
 }

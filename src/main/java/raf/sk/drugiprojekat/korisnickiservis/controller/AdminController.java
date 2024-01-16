@@ -33,22 +33,22 @@ public class AdminController {
                             "Default sort order is ascending. " +
                             "Multiple sort criteria are supported.")})
     @CheckSecurity(roles = {"ROLE_ADMIN"})
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<AdminDto>> getAllAdmins(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         return new ResponseEntity<>(adminService.findAll(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get admin by id")
     @CheckSecurity(roles = {"ROLE_ADMIN"})
-    @GetMapping("/{id}")
-    public ResponseEntity<AdminDto> getAdmin(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
+    @GetMapping(params = {"id"})
+    public ResponseEntity<AdminDto> getAdmin(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
         return new ResponseEntity<>(adminService.findById(id), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update admin by id")
     @CheckSecurity(roles = {"ROLE_ADMIN"}, admin_id_required = true)
-    @PutMapping("/{id}")
-    public ResponseEntity<AdminDto> updateAdmin(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id, AdminUpdateDto adminUpdateDto) {
+    @PutMapping(params = {"id"})
+    public ResponseEntity<AdminDto> updateAdmin(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id, @RequestBody(required = false) @Valid AdminUpdateDto adminUpdateDto) {
         return new ResponseEntity<>(adminService.update(id, adminUpdateDto), HttpStatus.OK);
     }
 

@@ -10,4 +10,5 @@ public interface AdminService {
     AdminDto findById(Long id);
     AdminDto update(Long id, AdminUpdateDto adminUpdateDto);
     TokenResponseDto login(TokenRequestDto tokenRequestDto);
+    void deleteById(Long id);
 }

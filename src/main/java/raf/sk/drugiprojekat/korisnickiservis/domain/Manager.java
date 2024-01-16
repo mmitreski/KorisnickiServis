@@ -14,12 +14,10 @@ public class Manager extends User{
 
     private String gymName;
     private LocalDate employmentDate;
-    private Boolean forbidden;
 
-    Manager(String username, String password, String email, LocalDate birthDate, String name, String surname, String gymName, LocalDate employmentDate, Boolean forbidden) {
+    public Manager(String username, String password, String email, LocalDate birthDate, String name, String surname, String gymName, LocalDate employmentDate) {
         super(username, password, email, birthDate, name, surname);
         this.gymName = gymName;
         this.employmentDate = employmentDate;
-        this.forbidden = forbidden;
     }
 }

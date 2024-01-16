@@ -29,22 +29,22 @@ public class ManagerController {
                             "Default sort order is ascending. " +
                             "Multiple sort criteria are supported.")})
     @CheckSecurity(roles = {"ROLE_ADMIN"})
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<ManagerDto>> getAllManagers(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         return new ResponseEntity<>(managerService.findAll(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get manager by id")
     @CheckSecurity(roles = {"ROLE_ADMIN"})
-    @GetMapping("/{id}")
-    public ResponseEntity<ManagerDto> getManagerById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
+    @GetMapping(params = {"id"})
+    public ResponseEntity<ManagerDto> getManagerById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
         return new ResponseEntity<>(managerService.findById(id), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update manager")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"}, manager_id_required = true)
-    @PutMapping("/{id}")
-    public ResponseEntity<ManagerDto> updateManagerById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id, @RequestBody @Valid ManagerUpdateDto managerUpdateDto) {
+    @PutMapping(params = {"id"})
+    public ResponseEntity<ManagerDto> updateManagerById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id, @RequestBody(required = false) @Valid ManagerUpdateDto managerUpdateDto) {
         return new ResponseEntity<>(managerService.update(id, managerUpdateDto), HttpStatus.OK);
     }
 
@@ -58,5 +58,13 @@ public class ManagerController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
         return new ResponseEntity<>(managerService.login(tokenRequestDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Delete manager")
+    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"}, manager_id_required = true)
+    @DeleteMapping(params = {"id"})
+    public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
+        managerService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

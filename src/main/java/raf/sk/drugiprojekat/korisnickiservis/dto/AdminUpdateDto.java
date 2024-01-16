@@ -17,11 +17,8 @@ public class AdminUpdateDto {
     private String username;
     @Length(min = 7, max = 15)
     private String password;
-    @NotNull
     private LocalDate birthDate;
-    @NotBlank
     private String name;
-    @NotBlank
     private String surname;
 }
 

@@ -39,15 +39,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
     @Override
     public ManagerDto update(Long id, ManagerUpdateDto managerUpdateDto) {
-        Manager manager = managerRepository.findManagerById(id).orElseThrow(() -> new NotFoundException(String.format("CLIENT: [id: %d] NOT FOUND.", id)));
-        manager.setName(managerUpdateDto.getName());
-        manager.setSurname(managerUpdateDto.getSurname());
-        manager.setUsername(managerUpdateDto.getUsername());
-        manager.setPassword(managerUpdateDto.getPassword());
-        manager.setEmail(managerUpdateDto.getEmail());
-        manager.setGymName(managerUpdateDto.getGymName());
-        manager.setBirthDate(manager.getBirthDate());
-        return managerMapper.managerToManagerDto(managerRepository.save(manager));
+        return managerMapper.managerToManagerDto(managerRepository.save(managerMapper.managerUpdateDtoToManager(id, managerUpdateDto)));
     }
     @Override
     public ManagerDto add(ManagerCreateDto managerCreateDto) {
@@ -60,5 +52,10 @@ public class ManagerServiceImpl implements ManagerService {
         claims.put("role", "ROLE_MANAGER");
         claims.put("manager_id", manager.getId());
         return new TokenResponseDto(tokenService.generate(claims));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        managerRepository.deleteById(id);
     }
 }

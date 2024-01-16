@@ -16,5 +16,4 @@ public class ManagerDto {
     private String surname;
     private String gymName;
     private LocalDate employmentDate;
-    private Boolean forbidden;
 }
