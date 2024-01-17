@@ -36,9 +36,8 @@ public class ManagerController {
     }
 
     @Operation(summary = "Get manager by id")
-    @CheckSecurity(roles = {"ROLEADMIN"})
     @GetMapping(params = {"id"})
-    public ResponseEntity<ManagerDto> getManagerById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
+    public ResponseEntity<ManagerDto> getManagerById(@RequestParam("id") Long id) {
         return new ResponseEntity<>(managerService.findById(id), HttpStatus.OK);
     }
 

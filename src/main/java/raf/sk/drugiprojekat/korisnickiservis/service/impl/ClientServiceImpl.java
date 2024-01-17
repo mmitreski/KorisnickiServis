@@ -19,6 +19,8 @@ import raf.sk.drugiprojekat.korisnickiservis.service.ClientService;
 
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 public class ClientServiceImpl implements ClientService {
@@ -28,7 +30,7 @@ public class ClientServiceImpl implements ClientService {
     private ClientMapper clientMapper;
     private JmsTemplate jmsTemplate;
     private MessageHelper messageHelper;
-    @Value("${destination.createActivationEmail}")
+    @Value("${destination.sendEmails}")
     private String activationEmail;
 
     public ClientServiceImpl(ClientRepository clientRepository, TokenService tokenService, ClientMapper clientMapper, JmsTemplate jmsTemplate, MessageHelper messageHelper) {
@@ -57,7 +59,9 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDto add(ClientCreateDto clientCreateDto) {
         ClientDto clientDto = clientMapper.clientToClientDto(clientRepository.save(clientMapper.clientCreateDtoToClient(clientCreateDto)));
-        jmsTemplate.convertAndSend(activationEmail, new Object()); // to notification service
+        String subject = "Aktivacija naloga";
+        String content = "Postovani, molimo Vas da aktivirate vas nalog na linku: http://localhost:8080/client/confirm?id=" + clientDto.getId() + ". Kada aktivirate nalog, mocicete da zakazujete treninge.";
+        jmsTemplate.convertAndSend(activationEmail, new EmailCreateDto(clientCreateDto.getEmail(), LocalDateTime.now(), subject, content));
         return clientDto;
     }
 
