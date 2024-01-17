@@ -12,4 +12,7 @@ public interface ClientService {
     TokenResponseDto login(TokenRequestDto tokenRequestDto);
     void forbiddenById(Long id, Boolean forbidden);
     void deleteById(Long id);
+    void confirmRegister(Long id);
+    void reserveTraining(Long id);
+    void cancelTraining(Long id);
 }

@@ -1,6 +1,7 @@
 package raf.sk.drugiprojekat.korisnickiservis.service.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ import raf.sk.drugiprojekat.korisnickiservis.repository.ManagerRepository;
 import raf.sk.drugiprojekat.korisnickiservis.security.service.TokenService;
 import raf.sk.drugiprojekat.korisnickiservis.service.ManagerService;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -48,10 +49,10 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
         Manager manager = managerRepository.findManagerByUsernameAndPassword(tokenRequestDto.getUsername(), tokenRequestDto.getPassword()).orElseThrow(() -> new NotFoundException(String.format("MANAGER: [username: %s, password: %s] NOT FOUND.", tokenRequestDto.getUsername(), tokenRequestDto.getPassword())));
-        Claims claims = Jwts.claims();
-        claims.put("role", "ROLE_MANAGER");
-        claims.put("manager_id", manager.getId());
-        return new TokenResponseDto(tokenService.generate(claims));
+        ClaimsBuilder claims = Jwts.claims();
+        claims.add("role", "ROLEMANAGER");
+        claims.add("managerid", manager.getId());
+        return new TokenResponseDto(tokenService.generate(claims.build()));
     }
 
     @Override

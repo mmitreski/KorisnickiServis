@@ -16,4 +16,5 @@ public class ClientDto {
     private Long cardId;
     private Long trainingsReserved;
     private Boolean forbidden;
+    private Boolean confirmed;
 }

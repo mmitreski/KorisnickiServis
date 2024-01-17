@@ -3,9 +3,13 @@ package raf.sk.drugiprojekat.korisnickiservis.security.service.impl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import raf.sk.drugiprojekat.korisnickiservis.security.service.TokenService;
+
+import java.nio.charset.StandardCharsets;
+
 @Service
 public class TokenServiceImpl implements TokenService {
 
@@ -15,8 +19,8 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public String generate(Claims claims) {
         return Jwts.builder()
-                .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .claims(claims)
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
 
@@ -24,10 +28,10 @@ public class TokenServiceImpl implements TokenService {
     public Claims parseToken(String jwt) {
         Claims claims;
         try {
-            claims = Jwts.parser()
+            claims = (Claims) Jwts.parser()
                     .setSigningKey(jwtSecret)
-                    .parseClaimsJws(jwt)
-                    .getBody();
+                    .build()
+                    .parse(jwt).getPayload();
         } catch (Exception e) {
             return null;
         }

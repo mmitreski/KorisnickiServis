@@ -24,6 +24,7 @@ public class ClientMapper {
         clientDto.setUsername(client.getUsername());
         clientDto.setBirthDate(client.getBirthDate());
         clientDto.setTrainingsReserved(client.getTrainingsReserved());
+        clientDto.setConfirmed(client.getConfirmed());
         return clientDto;
     }
 
@@ -36,6 +37,9 @@ public class ClientMapper {
         client.setUsername(clientCreateDto.getUsername());
         client.setPassword(clientCreateDto.getPassword());
         client.setCardId(clientCreateDto.getCardId());
+        client.setForbidden(false);
+        client.setTrainingsReserved(0L);
+        client.setConfirmed(false);
         return client;
     }
 

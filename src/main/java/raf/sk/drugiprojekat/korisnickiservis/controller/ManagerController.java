@@ -1,8 +1,9 @@
 package raf.sk.drugiprojekat.korisnickiservis.controller;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,55 +14,55 @@ import raf.sk.drugiprojekat.korisnickiservis.dto.*;
 import raf.sk.drugiprojekat.korisnickiservis.security.CheckSecurity;
 import raf.sk.drugiprojekat.korisnickiservis.service.ManagerService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/manager")
 @AllArgsConstructor
 public class ManagerController {
     private ManagerService managerService;
-    @ApiOperation(value = "Get all managers")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "What page number you want", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "size", value = "Number of items to return", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "sort", allowMultiple = true, dataType = "string", paramType = "query",
-                    value = "Sorting criteria in the format: property(,asc|desc). " +
+    @Operation(summary = "Get all gym")
+    @Parameters({
+            @Parameter(name = "page", description = "What page number you want", in = ParameterIn.QUERY),
+            @Parameter(name = "size", description = "Number of items to return", in = ParameterIn.QUERY),
+            @Parameter(name = "sort", in = ParameterIn.QUERY,
+                    description = "Sorting criteria in the format: property(,asc|desc). " +
                             "Default sort order is ascending. " +
                             "Multiple sort criteria are supported.")})
-    @CheckSecurity(roles = {"ROLE_ADMIN"})
+    @CheckSecurity(roles = {"ROLEADMIN"})
     @GetMapping("/all")
     public ResponseEntity<Page<ManagerDto>> getAllManagers(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         return new ResponseEntity<>(managerService.findAll(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get manager by id")
-    @CheckSecurity(roles = {"ROLE_ADMIN"})
+    @Operation(summary = "Get manager by id")
+    @CheckSecurity(roles = {"ROLEADMIN"})
     @GetMapping(params = {"id"})
     public ResponseEntity<ManagerDto> getManagerById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
         return new ResponseEntity<>(managerService.findById(id), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Update manager")
-    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"}, manager_id_required = true)
+    @Operation(summary = "Update manager")
+    @CheckSecurity(roles = {"ROLEADMIN", "ROLEMANAGER"}, manager_id_required = true)
     @PutMapping(params = {"id"})
     public ResponseEntity<ManagerDto> updateManagerById(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id, @RequestBody(required = false) @Valid ManagerUpdateDto managerUpdateDto) {
         return new ResponseEntity<>(managerService.update(id, managerUpdateDto), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Register manager")
+    @Operation(summary = "Register manager")
     @PostMapping("/register")
     public ResponseEntity<ManagerDto> registerManager(@RequestBody @Valid ManagerCreateDto managerCreateDto) {
         return new ResponseEntity<>(managerService.add(managerCreateDto), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Login")
+    @Operation(summary = "Login")
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
         return new ResponseEntity<>(managerService.login(tokenRequestDto), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Delete manager")
-    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"}, manager_id_required = true)
+    @Operation(summary = "Delete manager")
+    @CheckSecurity(roles = {"ROLEADMIN", "ROLEMANAGER"}, manager_id_required = true)
     @DeleteMapping(params = {"id"})
     public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String authorization, @RequestParam("id") Long id) {
         managerService.deleteById(id);

@@ -1,6 +1,7 @@
 package raf.sk.drugiprojekat.korisnickiservis.service.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ import raf.sk.drugiprojekat.korisnickiservis.repository.AdminRepository;
 import raf.sk.drugiprojekat.korisnickiservis.security.service.TokenService;
 import raf.sk.drugiprojekat.korisnickiservis.service.AdminService;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -50,10 +51,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
         Admin admin = adminRepository.findAdminByUsernameAndPassword(tokenRequestDto.getUsername(), tokenRequestDto.getPassword()).orElseThrow(() -> new NotFoundException(String.format("ADMIN: [username: %s, password: %s] NOT FOUND.", tokenRequestDto.getUsername(), tokenRequestDto.getPassword())));
-        Claims claims = Jwts.claims();
-        claims.put("role", "ROLE_ADMIN");
-        claims.put("admin_id", admin.getId());
-        return new TokenResponseDto(tokenService.generate(claims));
+        ClaimsBuilder claims = Jwts.claims();
+        claims.add("role", "ROLEADMIN");
+        claims.add("adminid", admin.getId());
+        return new TokenResponseDto(tokenService.generate(claims.build()));
     }
 
     @Override

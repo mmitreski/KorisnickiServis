@@ -3,7 +3,7 @@ package raf.sk.drugiprojekat.korisnickiservis.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
+import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
 
 @Getter @Setter

@@ -1,19 +1,23 @@
 package raf.sk.drugiprojekat.korisnickiservis.service.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import raf.sk.drugiprojekat.korisnickiservis.domain.Client;
 import raf.sk.drugiprojekat.korisnickiservis.dto.*;
 import raf.sk.drugiprojekat.korisnickiservis.exception.NotFoundException;
+import raf.sk.drugiprojekat.korisnickiservis.listener.helper.MessageHelper;
 import raf.sk.drugiprojekat.korisnickiservis.mapper.ClientMapper;
 import raf.sk.drugiprojekat.korisnickiservis.repository.ClientRepository;
 import raf.sk.drugiprojekat.korisnickiservis.security.service.TokenService;
 import raf.sk.drugiprojekat.korisnickiservis.service.ClientService;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -22,11 +26,17 @@ public class ClientServiceImpl implements ClientService {
     private TokenService tokenService;
     private ClientRepository clientRepository;
     private ClientMapper clientMapper;
+    private JmsTemplate jmsTemplate;
+    private MessageHelper messageHelper;
+    @Value("${destination.createActivationEmail}")
+    private String activationEmail;
 
-    public ClientServiceImpl(ClientRepository clientRepository, TokenService tokenService, ClientMapper clientMapper) {
+    public ClientServiceImpl(ClientRepository clientRepository, TokenService tokenService, ClientMapper clientMapper, JmsTemplate jmsTemplate, MessageHelper messageHelper) {
         this.clientRepository = clientRepository;
         this.tokenService = tokenService;
         this.clientMapper = clientMapper;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
     }
 
     @Override
@@ -46,17 +56,19 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientDto add(ClientCreateDto clientCreateDto) {
-        return clientMapper.clientToClientDto(clientMapper.clientCreateDtoToClient(clientCreateDto));
+        ClientDto clientDto = clientMapper.clientToClientDto(clientRepository.save(clientMapper.clientCreateDtoToClient(clientCreateDto)));
+        jmsTemplate.convertAndSend(activationEmail, new Object()); // to notification service
+        return clientDto;
     }
 
     @Override
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
         Client client = clientRepository.findClientByUsernameAndPassword(tokenRequestDto.getUsername(), tokenRequestDto.getPassword())
                 .orElseThrow(() -> new NotFoundException(String.format("CLIENT: [username: %s, password: %s] NOT FOUND.", tokenRequestDto.getUsername(), tokenRequestDto.getPassword())));
-        Claims claims = Jwts.claims();
-        claims.put("role", "ROLE_CLIENT");
-        claims.put("client_id", client.getId());
-        return new TokenResponseDto(tokenService.generate(claims));
+        ClaimsBuilder claims = Jwts.claims();
+        claims.add("role", "ROLECLIENT");
+        claims.add("clientid", client.getId());
+        return new TokenResponseDto(tokenService.generate(claims.build()));
     }
 
     @Override
@@ -67,5 +79,26 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void deleteById(Long id) {
         clientRepository.deleteById(id);
+    }
+
+    @Override
+    public void confirmRegister(Long id) {
+        Client client = clientRepository.findById(id).get();
+        client.setConfirmed(true);
+        clientRepository.save(client);
+    }
+
+    @Override
+    public void reserveTraining(Long id) {
+        Client client = clientRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("CLIENT: [id: %d] NOT FOUND.", id)));
+        client.setTrainingsReserved(client.getTrainingsReserved()+1);
+        clientRepository.save(client);
+    }
+
+    @Override
+    public void cancelTraining(Long id) {
+        Client client = clientRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("CLIENT: [id: %d] NOT FOUND.", id)));
+        client.setTrainingsReserved(client.getTrainingsReserved()-1);
+        clientRepository.save(client);
     }
 }
